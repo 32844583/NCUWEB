@@ -16,7 +16,7 @@ class RoomForm(forms.ModelForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['avatar', 'name', 'username', 'email', 'bio']
 
 class ReportForm(forms.ModelForm):
     class Meta: 
