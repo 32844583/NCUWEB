@@ -7,15 +7,6 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Room, Topic, Message, User, Report, Image
 from .forms import RoomForm, UserForm, MyUserCreationForm, ReportForm, ImageForm
 
-# Create your views here.
-
-# rooms = [
-#     {'id': 1, 'name': 'Lets learn python!'},
-#     {'id': 2, 'name': 'Design with me'},
-#     {'id': 3, 'name': 'Frontend developers'},
-# ]
-
-
 def loginPage(request):
     page = 'login'
     if request.user.is_authenticated:
@@ -71,12 +62,6 @@ def home(request):
     od = request.GET.get('order_direction') if request.GET.get('order_direction') != None else 'descending'
     direction_symbol = '-' if (od == 'descending') else ''
 
-    # order_option = request.GET.get('order_option')
-    # order_direction = request.GET.get('order_direction')
-    
-    # oo = order_option if order_option != None else 'created'
-    # od = order_direction if order_direction != None else 'descending'
-
 
     rooms = Room.objects.filter(
         Q(topic__name__icontains=q) |
@@ -100,35 +85,9 @@ def likedRooms(request):
     user = request.user
     liked_rooms = Room.objects.filter(likes=user)
     room_count = liked_rooms.count()
-    # q = request.GET.get('q') if request.GET.get('q') != None else ''
-    # oo = request.GET.get('order_option') if request.GET.get('order_option') != None else 'created'
-    
-    # od = request.GET.get('order_direction') if request.GET.get('order_direction') != None else 'descending'
-    # direction_symbol = '-' if (od == 'descending') else ''
-
-    # # order_option = request.GET.get('order_option')
-    # # order_direction = request.GET.get('order_direction')
-    
-    # # oo = order_option if order_option != None else 'created'
-    # # od = order_direction if order_direction != None else 'descending'
-
-
-    # rooms = Room.objects.filter(
-    #     Q(topic__name__icontains=q) |
-    #     Q(name__icontains=q) |
-    #     Q(description__icontains=q)
-    # ).order_by(str(direction_symbol+oo))
-    # # ).order_by(oo)
-
-    # topics = Topic.objects.all()[0:5]
-    # room_count = rooms.count()
-    # room_messages = Message.objects.filter(
-    #     Q(room__topic__name__icontains=q))[0:3]
 
     context = {'liked_rooms': liked_rooms,
-            #    'topics': topics,
                'room_count': room_count,}
-            #    'room_messages': room_messages
     return render(request, 'base/liked_rooms.html', context)
 
 
@@ -137,9 +96,6 @@ def room(request, pk):
     room = Room.objects.get(id=pk)
     room_messages = room.message_set.all()
     participants = room.participants.all()
-
-    # Room.objects.filter(id=pk).update(like_count = like_count)
-    # print(like_count)
 
     if request.method == 'POST':
         message = Message.objects.create(
