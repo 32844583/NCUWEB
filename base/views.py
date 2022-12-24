@@ -50,7 +50,7 @@ def registerPage(request):
             login(request, user)
             return redirect('home')
         else:
-            messages.error(request, 'An error occurred during registration')
+            messages.error(request, form.errors)
 
     return render(request, 'base/login_register.html', {'form': form})
 
@@ -107,6 +107,7 @@ def room(request, pk):
         message.room.save()
         
         room.participants.add(request.user)
+        
         return redirect('room', pk=room.id)
 
     context = {'room': room,
@@ -149,8 +150,7 @@ def createRoom(request):
                     Image.objects.create(room=f, image=i)
             messages.success(request, "New Romm create!")
         else:
-            print("-"*30)
-            print(form.errors)
+            messages.error(request, form.errors)
         return redirect('home')
     context = {'form':form, 'topics':topics, 'imageform':imageform}
     return render(request, 'base/room_form.html', context)
@@ -180,8 +180,7 @@ def updateRoom(request, pk):
                     Image.objects.create(room=f, image=i)
             messages.success(request, "New Romm create!")
         else:
-            print("-"*30)
-            print(form.errors)
+            messages.error(request, form.errors)
     context = {'form':form, 'topics':topics, 'imageform':imageform}
     return render(request, 'base/room_form.html', context)
 
@@ -223,7 +222,8 @@ def updateUser(request):
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
-
+        else:
+            messages.error(request, form.errors)
     return render(request, 'base/update-user.html', {'form': form})
 
 
