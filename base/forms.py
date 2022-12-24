@@ -5,7 +5,7 @@ from django import forms
 class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['name', 'username', 'email', 'password1', 'password2']
+        fields = ['email', 'password1', 'password2']
         
     def clean_email(self):
         User.email = self.cleaned_data.get('email', '')
@@ -54,6 +54,7 @@ class ReportForm(forms.ModelForm):
 
 class ImageForm(forms.ModelForm):
     image = forms.ImageField(
+        required=False,
         label='Image', 
         widget = forms.ClearableFileInput(attrs={'multiple':True}),
     )
