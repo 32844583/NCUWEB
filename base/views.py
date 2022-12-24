@@ -84,7 +84,7 @@ def home(request):
         Q(description__icontains=q)
     ).order_by(str(direction_symbol+oo))
     # ).order_by(oo)
-
+    print(rooms)
     topics = Topic.objects.all()[0:5]
     room_count = rooms.count()
     room_messages = Message.objects.filter(
@@ -205,17 +205,28 @@ def updateRoom(request, pk):
     topics = Topic.objects.all()
     room = Room.objects.get(id=pk)
     form = RoomForm(instance=room)
-    context = {'form':form}
+    imageform = ImageForm()
     if request.method == 'POST':
         form = RoomForm(request.POST, instance=room)
-        topic_name = request.POST.get('topic')
-        topic, create = Topic.objects.get_or_create(name=topic_name)
-        room.topic = topic
-        room.name = request.POST.get('name')
-        room.description = request.POST.get('description')
-        room.save()
-        return redirect('home')
-    context = {'form':form, 'topics':topics, 'room':room}
+        files = request.FILES.getlist("image")
+        
+        if form.is_valid():
+            f = form.save(commit=False)
+            f.host = request.user
+            topic_name = request.POST.get('topic')
+            topic, create = Topic.objects.get_or_create(name=topic_name)
+            f.topic = topic
+            f.name = request.POST.get('name')
+            f.description = request.POST.get('description')
+            f.save()
+            if files:
+                for i in files:
+                    Image.objects.create(room=f, image=i)
+            messages.success(request, "New Romm create!")
+        else:
+            print("-"*30)
+            print(form.errors)
+    context = {'form':form, 'topics':topics, 'imageform':imageform}
     return render(request, 'base/room_form.html', context)
 
 
